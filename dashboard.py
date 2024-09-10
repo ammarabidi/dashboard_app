@@ -1,3 +1,4 @@
+from altair import selection
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -43,7 +44,21 @@ def main():
     count2 = df['Type 2'].value_counts()
     fig2 = px.bar(count2,count2.index, count2.values)
     c2.plotly_chart(fig2)
-    c2.dataframe(count2)
+
+    cols = ['Attack', 'Defene', 'Sp. Def', 'Speed','HP']
+    selections = c1.multiselect("Select Stats", cols, default=['HP','Attack'])    
+
+    if selections:
+        fig3 = px.scatter_matrix(df, dimensions= selections,
+                                color='Generation', height=800)
+        st.plotly_chart(fig3, use_container_width=True)
+        fig4 = px.histogram(df, x=selections, height = 600)
+        st.plotly_chart(fig4, use_container_width=True)
+
+    c1,c2,c3 = st.columns(3)
+    num_cols = df.select_dtypes(include=[np.number]).columns.tolist()
+    cat_cols = df.select_dtypes(exclude=[np.number]).columns.tolist()[1:]
+    x = c1.selecbox("Select")
 
     if __name__ == "__main__":
         main()
